@@ -53,8 +53,8 @@ if uploaded_file is not None:
             columns=["No.", "Frequency[Hz]", "Amplitude", "Phase[rad]"],
         )
 
-        # --- 📊 成分解析結果（上位20成分の表 ＆ CSVダウンロード） ---
-        st.subheader(f"📊 上位 {actual_num} 成分 (周波数昇順)")
+        # ---成分解析結果（上位20成分の表 ＆ CSVダウンロード） ---
+        st.subheader(f" 上位 {actual_num} 成分 (周波数昇順)")
         st.dataframe(df_20)
 
         csv_bytes = df_20.to_csv(index=False).encode("utf-8")
