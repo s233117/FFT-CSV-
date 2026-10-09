@@ -54,12 +54,39 @@ if uploaded_file is not None:
         )
 
         # ---成分解析結果（上位20成分の表 ＆ CSVダウンロード） ---
-        st.subheader(f" 上位 {actual_num} 成分 (デフォルトは周波数昇順)")
-        st.dataframe(df_20)
+        st.subheader(f" 上位 {actual_num} 成分")
 
-        csv_bytes = df_20.to_csv(index=False).encode("utf-8")
+        # ソート順の選択UI
+        sort_col = st.selectbox(
+            "並べ替えの基準（ソート項目）を選択してください:",
+            ["Frequency[Hz] (昇順)", "Frequency[Hz] (降順)", 
+             "Amplitude (降順)", "Amplitude (昇順)", 
+             "Phase[rad] (昇順)", "Phase[rad] (降順)", "No. (昇順)"]
+        )
+
+        # 選択に応じたデータフレームのソート処理
+        if sort_col == "Frequency[Hz] (昇順)":
+            sorted_df = df_20.sort_values(by="Frequency[Hz]", ascending=True)
+        elif sort_col == "Frequency[Hz] (降順)":
+            sorted_df = df_20.sort_values(by="Frequency[Hz]", ascending=False)
+        elif sort_col == "Amplitude (降順)":
+            sorted_df = df_20.sort_values(by="Amplitude", ascending=False)
+        elif sort_col == "Amplitude (昇順)":
+            sorted_df = df_20.sort_values(by="Amplitude", ascending=True)
+        elif sort_col == "Phase[rad] (昇順)":
+            sorted_df = df_20.sort_values(by="Phase[rad]", ascending=True)
+        elif sort_col == "Phase[rad] (降順)":
+            sorted_df = df_20.sort_values(by="Phase[rad]", ascending=False)
+        else:
+            sorted_df = df_20.sort_values(by="No.", ascending=True)
+
+        # ソートされた表を表示
+        st.dataframe(sorted_df, hide_index=True, use_container_width=True)
+
+        # ソートされたデータから CSV を生成
+        csv_bytes = sorted_df.to_csv(index=False).encode("utf-8")
         st.download_button(
-            label="上位20成分のCSVをダウンロード",
+            label="選択したソート順でCSVをダウンロード",
             data=csv_bytes,
             file_name="top20_components.csv",
             mime="text/csv",
